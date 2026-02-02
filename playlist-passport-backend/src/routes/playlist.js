@@ -29,13 +29,30 @@ router.post("/generate/:tripId", auth, async (req, res) => {
       `Playlist Passport – ${new Date().toISOString().slice(0, 10)}`
     );
 
+    const addedTrackIds = new Set();   
+
     for (const memory of memories) {
       if (!memory.song_deezer_id) continue;
 
-      const similarTracks = await getSimilarTracks(memory.song_deezer_id, 5);
+      const baseTrack = {
+        deezerId: memory.song_deezer_id,
+        title: memory.song_title,
+        artist: memory.song_artist,
+        previewUrl: memory.song_preview_url,
+        coverUrl: memory.song_cover_url,
+      };
+
+      if (!addedTrackIds.has(baseTrack.deezerId)) {
+        await addSongToPlaylist(playlist.id, baseTrack);
+        addedTrackIds.add(baseTrack.deezerId);
+      }
+
+      const similarTracks = await getSimilarTracks(memory.song_deezer_id, 3);
 
       for (const track of similarTracks) {
+        if (!track.deezerId || addedTrackIds.has(track.deezerId)) continue;
         await addSongToPlaylist(playlist.id, track);
+        addedTrackIds.add(track.deezerId);
       }
     }
 

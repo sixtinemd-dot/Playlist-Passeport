@@ -1,7 +1,7 @@
 // src/components/CreateTripForm.jsx
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/API"; // Axios instance
+import api from "../services/api"; // Axios instance
 import { AuthContext } from "../context/AuthContext";
 
 export default function CreateTripForm({ onTripCreated }) {

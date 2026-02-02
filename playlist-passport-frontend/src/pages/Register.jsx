@@ -1,7 +1,8 @@
 import { useState, useContext } from "react";
-import API from "../services/API";
+import API from "../services/api";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import "../styles/Auth.css";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -29,30 +30,45 @@ export default function Register() {
   };
 
   return (
-    <div>
-      <h1>Register</h1>
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-badge">🧭</div>
+        <h1>Create your passport</h1>
+        <p className="auth-subtitle">
+          Join to save memories, map trips, and generate playlists.
+        </p>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <p className="auth-error">{error}</p>}
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <label>
+            Email
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </label>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+          <label>
+            Password
+            <input
+              type="password"
+              placeholder="Create a password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </label>
 
-        <button type="submit">Create account</button>
-      </form>
+          <button type="submit" className="auth-submit">
+            Create account
+          </button>
+        </form>
+        <p className="auth-footer">Let’s make this trip unforgettable.</p>
+      </div>
     </div>
   );
 }

@@ -13,6 +13,9 @@ const createPlaylist = async (tripId, name) => {
 
 // Add song to playlist
 const addSongToPlaylist = async (playlistId, song) => {
+  const deezerId = song.deezerId ?? song.deezer_id;
+  if (!deezerId) return;
+
   const query = `
     INSERT INTO playlist_songs
     (playlist_id, deezer_id, title, artist, preview_url, cover_url)
@@ -21,11 +24,11 @@ const addSongToPlaylist = async (playlistId, song) => {
 
   await pool.query(query, [
     playlistId,
-    song.deezerId,
+    deezerId,
     song.title,
     song.artist,
-    song.previewUrl,
-    song.coverUrl,
+    song.previewUrl ?? song.preview_url,
+    song.coverUrl ?? song.cover_url,
   ]);
 };
 

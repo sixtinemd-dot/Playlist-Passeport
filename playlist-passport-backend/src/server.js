@@ -3,9 +3,11 @@ const tripRoutes = require("./routes/trips");
 const memoryRoutes = require("./routes/memories");
 const playlistRoutes = require("./routes/playlist");
 const songsRoutes = require("./routes/songs");
+const uploadsRoutes = require("./routes/uploads");
 
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
 
 const { connectDB } = require("./config/db");
@@ -23,6 +25,8 @@ app.use("/songs", songsRoutes);
 
 // ...other routes
 app.use("/playlists", playlistRoutes);
+app.use("/uploads", uploadsRoutes);
+app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 
 
 // Test route

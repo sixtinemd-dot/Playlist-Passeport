@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import API from "../services/API"; // Axios instance
+import API from "../services/api"; // Axios instance
 import { useNavigate } from "react-router-dom";
 import "../styles/Home.css";
 
@@ -88,7 +88,7 @@ export default function Home() {
       </header>
 
       {/* Create Trip Form */}
-      <section className="card create-trip-card">
+       <section className="card create-trip-card">
         <h2>Start a new trip</h2>
         <div className="create-trip-form">
           <input
@@ -102,7 +102,7 @@ export default function Home() {
           </button>
         </div>
       </section>
-
+      
       {/* List of Trips */}
       <h2 className="section-title">My Trips</h2>
       {trips.length === 0 ? (

@@ -1,7 +1,7 @@
 import "../styles/TripDetails.css";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import API from "../services/API";
+import API from "../services/api";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { useMapEvents } from "react-leaflet";
 import L from "leaflet";
@@ -29,7 +29,8 @@ export default function TripDetails() {
     longitude: 2.3522,
   });
 
-  const [newPhotoUrl, setNewPhotoUrl] = useState("");
+  const [uploadStatus, setUploadStatus] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
   const [songQuery, setSongQuery] = useState("");
   const [songResults, setSongResults] = useState([]);
   const [locationQuery, setLocationQuery] = useState("");
@@ -63,13 +64,37 @@ export default function TripDetails() {
   /* =========================
      MEMORY HELPERS
   ========================== */
-  const handleAddPhoto = () => {
-    if (!newPhotoUrl) return;
-    setNewMemory((prev) => ({
-      ...prev,
-      photos: [...prev.photos, newPhotoUrl],
-    }));
-    setNewPhotoUrl("");
+  const handlePhotoUpload = async (event) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
+
+    setIsUploading(true);
+    setUploadStatus("Uploading photos...");
+
+    try {
+      const uploadedUrls = await Promise.all(
+        files.map(async (file) => {
+          const formData = new FormData();
+          formData.append("photo", file);
+          const res = await API.post("/uploads", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          return res.data.url;
+        })
+      );
+
+      setNewMemory((prev) => ({
+        ...prev,
+        photos: [...prev.photos, ...uploadedUrls],
+      }));
+      setUploadStatus("Photos uploaded!");
+    } catch (err) {
+      console.error("Photo upload failed", err.response?.data || err);
+      setUploadStatus("Photo upload failed. Please try again.");
+    } finally {
+      setIsUploading(false);
+      event.target.value = "";
+    }
   };
 
   const searchSongs = async () => {
@@ -82,7 +107,7 @@ export default function TripDetails() {
     }
   };
 
-  const handleLocationSearch = async (event) => {
+   const handleLocationSearch = async (event) => {
     event.preventDefault();
     if (!locationQuery.trim()) return;
 
@@ -176,6 +201,9 @@ export default function TripDetails() {
 
   if (!trip) return <p>Loading trip...</p>;
 
+  const resolvePhotoUrl = (photo) =>
+  typeof photo === "string" ? photo : photo.photo_url;
+
   function MapClickHandler({ onPick }) {
     useMapEvents({
       click(e) {
@@ -201,18 +229,27 @@ export default function TripDetails() {
   ========================== */
   return (
     <div className="trip-details-container">
-      <h1>{trip.title}</h1>
-      <p>Status: {trip.is_finished ? "Finished" : "Ongoing"}</p>
+      <h1>🧳 {trip.title}</h1>
+      <p className="trip-status">
+        Status:{" "}
+        <span
+          className={`status-pill ${
+            trip.is_finished ? "status-finished" : "status-ongoing"
+          }`}
+        >
+          {trip.is_finished ? "Finished" : "Ongoing"}
+        </span>
+      </p>
 
       {!trip.is_finished && (
         <button className="finish-trip-btn" onClick={handleFinishTrip}>
-          Finish Trip & Generate Playlist
+          🎉 Finish Trip & Generate Playlist
         </button>
       )}
 
       <section className="map-panel">
         <div className="map-panel-header">
-          <h2>Memories Map</h2>
+          <h2>🗺️ Memories Map</h2>
           <p>Tap the map to drop a pin, or search an address below.</p>
         </div>
         {!trip.is_finished && (
@@ -263,7 +300,7 @@ export default function TripDetails() {
                 🎵 {mem.song_title} — {mem.song_artist}
                 <div className="photos-container">
                   {mem.photos?.map((p, i) => (
-                    <img key={i} src={p} alt="Memory" />
+                    <img key={i} src={resolvePhotoUrl(p)} alt="Memory" />
                   ))}
                 </div>
               </Popup>
@@ -274,7 +311,7 @@ export default function TripDetails() {
 
       {!trip.is_finished && (
         <div className="memory-form">
-          <h2>Add New Memory</h2>
+          <h2>✨ Add New Memory</h2>
 
           <input
             type="text"
@@ -285,7 +322,7 @@ export default function TripDetails() {
             }
           />
 
-          <h3>Choose a song</h3>
+          <h3>🎧 Choose a song</h3>
 
           <input
             type="text"
@@ -339,17 +376,28 @@ export default function TripDetails() {
             }
           />
 
-          <input
-            type="text"
-            placeholder="Photo URL"
-            value={newPhotoUrl}
-            onChange={(e) => setNewPhotoUrl(e.target.value)}
-          />
-          <button onClick={handleAddPhoto}>Add Photo</button>
+          <label className="photo-upload">
+            <span>📸 Upload photos</span>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handlePhotoUpload}
+              disabled={isUploading}
+            />
+          </label>
+          {uploadStatus && <p className="upload-status">{uploadStatus}</p>}
+          {newMemory.photos.length > 0 && (
+            <div className="upload-preview">
+              {newMemory.photos.map((url, index) => (
+                <img key={index} src={url} alt="Uploaded preview" />
+              ))}
+            </div>
+          )}
 
           <button onClick={handleAddMemory}>Save Memory</button>
 
-          <h2>Memories / Pins</h2>
+          <h2>📌 Memories / Pins</h2>
         {memories.length === 0 ? (
         <p>No memories yet.</p>
         ) : (
@@ -365,7 +413,7 @@ export default function TripDetails() {
                     {mem.photos.map((p, i) => (
                     <img
                         key={i}
-                        src={p}
+                        src={resolvePhotoUrl(p)}
                         alt="memory"
                         style={{ width: "70px", height: "70px", objectFit: "cover", borderRadius: "8px" }}
                     />
@@ -382,7 +430,7 @@ export default function TripDetails() {
 
         {trip.is_finished && (
         <div className="playlist-section">
-            <h2>Playlist</h2>
+            <h2>🎶 Playlist</h2>
 
             {playlist.length === 0 ? (
             <p>No playlist found yet.</p>

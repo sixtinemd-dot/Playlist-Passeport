@@ -1,7 +1,8 @@
 import { useState, useContext } from "react";
-import API from "../services/API";
+import API from "../services/api";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import "../styles/Auth.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -24,30 +25,45 @@ export default function Login() {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-badge">✨</div>
+        <h1>Welcome back</h1>
+        <p className="auth-subtitle">
+          Log in to continue curating your travel soundtrack.
+        </p>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <p className="auth-error">{error}</p>}
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <label>
+            Email
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </label>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+          <label>
+            Password
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </label>
 
-        <button type="submit">Login</button>
-      </form>
+          <button type="submit" className="auth-submit">
+            Login
+          </button>
+        </form>
+        <p className="auth-footer">Ready for your next adventure?</p>
+      </div>
     </div>
   );
 }

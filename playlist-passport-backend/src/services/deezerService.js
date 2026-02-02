@@ -10,11 +10,11 @@ const getSimilarTracks = async (deezerTrackId, limit = 5) => {
   const tracks = Array.isArray(response.data?.data) ? response.data.data : [];
 
   return tracks.slice(0, limit).map((track) => ({
-    deezer_id: track.id,
+    deezerId: track.id,
     title: track.title,
     artist: track.artist?.name || "Unknown",
-    preview_url: track.preview || null,
-    cover_url: track.album?.cover_medium || null,
+    previewUrl: track.preview || null,
+    coverUrl: track.album?.cover_medium || null,
   }));
 };
 

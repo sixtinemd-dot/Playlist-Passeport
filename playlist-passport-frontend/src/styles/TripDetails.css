@@ -6,6 +6,23 @@
   margin: 0 auto;
   font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
   color: #0f172a;
+  position: relative;
+}
+
+.trip-details-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top left, #fde68a 0%, transparent 55%),
+    radial-gradient(circle at top right, #a5b4fc 0%, transparent 50%),
+    radial-gradient(circle at bottom right, #fbcfe8 0%, transparent 55%);
+  z-index: -1;
+}
+
+.trip-details-container h1 {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  margin-bottom: 0.5rem;
+  color: #0f172a;
 }
 
 .trip-details-container h1 {
@@ -115,11 +132,12 @@
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  border: 2px solid rgba(99, 102, 241, 0.15);
 }
 
 .memory-form {
   margin-top: 2.5rem;
-  background: #f8fafc;
+  background: linear-gradient(135deg, #ffffff 0%, #fef3c7 40%, #fce7f3 100%);
   padding: 1.5rem;
   border-radius: 18px;
   display: flex;
@@ -135,10 +153,46 @@
   font-size: 1rem;
 }
 
+.photo-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.photo-upload input[type="file"] {
+  padding: 0.6rem;
+  border-radius: 12px;
+  border: 1px dashed rgba(99, 102, 241, 0.4);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.upload-status {
+  font-size: 0.95rem;
+  color: #4338ca;
+  font-weight: 600;
+}
+
+.upload-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.upload-preview img {
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.16);
+  animation: floaty 3.5s ease-in-out infinite;
+}
+
 .memory-form button {
   padding: 0.55rem 1.2rem;
   border: none;
-  background-color: #4f46e5;
+  background: linear-gradient(120deg, #4f46e5, #06b6d4, #f97316);
   color: white;
   border-radius: 999px;
   cursor: pointer;
@@ -146,7 +200,7 @@
 }
 
 .memory-form button:hover {
-  background-color: #3730a3;
+  background-color: #4338ca;
   transform: translateY(-1px);
 }
 
@@ -167,7 +221,7 @@
 
 .playlist-section {
   margin-top: 2.5rem;
-  background: white;
+  background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 50%, #fce7f3 100%);
   padding: 1.5rem;
   border-radius: 18px;
   box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
@@ -199,5 +253,25 @@
 
   .location-search input {
     flex: 1;
+  }
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    box-shadow: 0 12px 26px rgba(244, 63, 94, 0.28);
+  }
+  50% {
+    box-shadow: 0 16px 32px rgba(236, 72, 153, 0.4);
+  }
+}
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
   }
 }
