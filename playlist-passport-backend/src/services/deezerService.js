@@ -7,8 +7,9 @@ const getSimilarTracks = async (deezerTrackId, limit = 5) => {
   const url = `https://api.deezer.com/track/${deezerTrackId}/related`;
 
   const response = await axios.get(url);
+  const tracks = Array.isArray(response.data?.data) ? response.data.data : [];
 
-  return response.data.data.slice(0, limit).map(track => ({
+  return tracks.slice(0, limit).map((track) => ({
     deezer_id: track.id,
     title: track.title,
     artist: track.artist?.name || "Unknown",
@@ -20,4 +21,3 @@ const getSimilarTracks = async (deezerTrackId, limit = 5) => {
 module.exports = {
   getSimilarTracks,
 };
-

@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { AuthProvider } from "./context/AuthContext";
+import "leaflet/dist/leaflet.css";
 import "./styles/TripDetails.css"; // global CSS (optional)
 
 ReactDOM.createRoot(document.getElementById("root")).render(

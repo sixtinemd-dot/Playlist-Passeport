@@ -2,7 +2,7 @@ import "../styles/TripDetails.css";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import API from "../services/API";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { useMapEvents } from "react-leaflet";
 import L from "leaflet";
 
@@ -32,6 +32,9 @@ export default function TripDetails() {
   const [newPhotoUrl, setNewPhotoUrl] = useState("");
   const [songQuery, setSongQuery] = useState("");
   const [songResults, setSongResults] = useState([]);
+  const [locationQuery, setLocationQuery] = useState("");
+  const [locationStatus, setLocationStatus] = useState("");
+  const [mapTarget, setMapTarget] = useState(null);
 
   /* =========================
      FETCH TRIP + MEMORIES
@@ -79,14 +82,46 @@ export default function TripDetails() {
     }
   };
 
+  const handleLocationSearch = async (event) => {
+    event.preventDefault();
+    if (!locationQuery.trim()) return;
+
+    setLocationStatus("Searching...");
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          locationQuery
+        )}&limit=1`
+      );
+      const data = await response.json();
+      if (!Array.isArray(data) || data.length === 0) {
+        setLocationStatus("No locations found. Try another address.");
+        return;
+      }
+
+      const [result] = data;
+      const lat = Number(result.lat);
+      const lng = Number(result.lon);
+
+      setNewMemory((prev) => ({
+        ...prev,
+        latitude: lat,
+        longitude: lng,
+        locationName: prev.locationName || result.display_name,
+      }));
+      setMapTarget({ lat, lng });
+      setLocationStatus(`Pinned: ${result.display_name}`);
+    } catch (err) {
+      console.error("Location search failed", err);
+      setLocationStatus("Search failed. Please try again.");
+    }
+  };
 
   const handleAddMemory = async () => {
     if (!newMemory.locationName || !newMemory.song) {
       alert("Please fill location and select a song");
       return;
     }
-
-    console.log("SENDING SONG:", newMemory.song);
 
     try {
       const res = await API.post(`/memories/${tripId}`, {
@@ -142,13 +177,24 @@ export default function TripDetails() {
   if (!trip) return <p>Loading trip...</p>;
 
   function MapClickHandler({ onPick }) {
-  useMapEvents({
-    click(e) {
-      onPick(e.latlng);
-    },
-  });
-  return null;
-}
+    useMapEvents({
+      click(e) {
+        onPick(e.latlng);
+      },
+    });
+    return null;
+  }
+
+  function MapViewController({ target }) {
+    const map = useMap();
+
+    useEffect(() => {
+      if (!target) return;
+      map.setView([target.lat, target.lng], 8, { animate: true });
+    }, [map, target]);
+
+    return null;
+  }
 
   /* =========================
      RENDER
@@ -164,46 +210,67 @@ export default function TripDetails() {
         </button>
       )}
 
-    <MapContainer className="memories-map" center={[48.8566, 2.3522]} zoom={5}>
-    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <section className="map-panel">
+        <div className="map-panel-header">
+          <h2>Memories Map</h2>
+          <p>Tap the map to drop a pin, or search an address below.</p>
+        </div>
+        {!trip.is_finished && (
+          <form className="location-search" onSubmit={handleLocationSearch}>
+            <input
+              type="text"
+              placeholder="Search an address or city"
+              value={locationQuery}
+              onChange={(e) => setLocationQuery(e.target.value)}
+            />
+            <button type="submit">Search</button>
+          </form>
+        )}
+        {locationStatus && (
+          <p className="location-status">{locationStatus}</p>
+        )}
+        <MapContainer className="memories-map" center={[48.8566, 2.3522]} zoom={5}>
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          <MapViewController target={mapTarget} />
 
-    {/* click-to-pin */}
-    <MapClickHandler
-        onPick={({ lat, lng }) => {
-        setNewMemory((prev) => ({
-            ...prev,
-            latitude: lat,
-            longitude: lng,
-        }));
-        }}
-    />
+          {/* click-to-pin */}
+          <MapClickHandler
+            onPick={({ lat, lng }) => {
+              setNewMemory((prev) => ({
+                ...prev,
+                latitude: lat,
+                longitude: lng,
+              }));
+            }}
+          />
 
-    {/* preview marker for new memory */}
-    {!trip.is_finished && newMemory.latitude && newMemory.longitude && (
-        <Marker position={[newMemory.latitude, newMemory.longitude]}>
-        <Popup>📍 New memory location</Popup>
-        </Marker>
-    )}
+          {/* preview marker for new memory */}
+          {!trip.is_finished && newMemory.latitude && newMemory.longitude && (
+            <Marker position={[newMemory.latitude, newMemory.longitude]}>
+              <Popup>📍 New memory location</Popup>
+            </Marker>
+          )}
 
-    {/* existing memories */}
-    {memories.map((mem) => (
-        <Marker
-        key={mem.id}
-        position={[mem.latitude || 48.8566, mem.longitude || 2.3522]}
-        >
-        <Popup>
-            <strong>{mem.location_name}</strong>
-            <br />
-            🎵 {mem.song_title} — {mem.song_artist}
-            <div className="photos-container">
-            {mem.photos?.map((p, i) => (
-                <img key={i} src={p} alt="Memory" />
-            ))}
-            </div>
-        </Popup>
-        </Marker>
-    ))}
-    </MapContainer>
+          {/* existing memories */}
+          {memories.map((mem) => (
+            <Marker
+              key={mem.id}
+              position={[mem.latitude || 48.8566, mem.longitude || 2.3522]}
+            >
+              <Popup>
+                <strong>{mem.location_name}</strong>
+                <br />
+                🎵 {mem.song_title} — {mem.song_artist}
+                <div className="photos-container">
+                  {mem.photos?.map((p, i) => (
+                    <img key={i} src={p} alt="Memory" />
+                  ))}
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
+      </section>
 
       {!trip.is_finished && (
         <div className="memory-form">
@@ -256,7 +323,12 @@ export default function TripDetails() {
             type="number"
             placeholder="Latitude"
             value={newMemory.latitude}
-            onChange={(e) => setNewMemory((prev) => ({ ...prev, locationName: e.target.value }))}
+            onChange={(e) =>
+              setNewMemory((prev) => ({
+                ...prev,
+                latitude: Number(e.target.value),
+              }))
+            }
           />
           <input
             type="number"
