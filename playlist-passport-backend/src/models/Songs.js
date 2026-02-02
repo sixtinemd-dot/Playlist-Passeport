@@ -1,5 +1,7 @@
 const axios = require("axios");
 
+// Search songs on the Deezer API based on a text query
+// Returns a simplified list of tracks used by the frontend
 const searchSongs = async (query, limit = 10) => {
   if (!query) return [];
 
@@ -17,3 +19,4 @@ const searchSongs = async (query, limit = 10) => {
 };
 
 module.exports = { searchSongs };
+

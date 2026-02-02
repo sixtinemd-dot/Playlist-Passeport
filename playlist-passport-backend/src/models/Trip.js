@@ -45,21 +45,21 @@ const { getSimilarTracks } = require("./Deezer"); // or deezerService path
 
 // Finish trip + generate playlist
 const finishTripAndGeneratePlaylist = async (tripId) => {
-  // 1️⃣ Mark trip as finished
+  // 1: Mark trip as finished
   const tripRes = await pool.query(
     `UPDATE trips SET is_finished = true WHERE id = $1 RETURNING *`,
     [tripId]
   );
   const trip = tripRes.rows[0];
 
-  // 2️⃣ Get memories for this trip
+  // 2: Get memories for this trip
   const memoriesRes = await pool.query(
     `SELECT * FROM memories WHERE trip_id = $1`,
     [tripId]
   );
   const memories = memoriesRes.rows;
 
-  // 3️⃣ Create playlist
+  // 3: Create playlist
   const playlistRes = await pool.query(
     `INSERT INTO playlists (trip_id, name)
      VALUES ($1, $2)
@@ -68,7 +68,7 @@ const finishTripAndGeneratePlaylist = async (tripId) => {
   );
   const playlist = playlistRes.rows[0];
 
-  // 4️⃣ For each memory, add the original song + similar songs
+  // 4: For each memory, add the original song + similar songs
   for (const memory of memories) {
     if (!memory.song_deezer_id) continue;
 

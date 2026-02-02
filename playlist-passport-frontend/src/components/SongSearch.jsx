@@ -1,11 +1,13 @@
 import { useState } from "react";
 import API from "../services/api";
 
+// Component allowing users to search and select a song via the Deezer API
 export default function SongSearch({ onSelect }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // Fetch songs matching the search query
   const search = async () => {
     if (!query) return;
     setLoading(true);

@@ -1,0 +1,230 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+6 0 obj
+<< /Length 3475 >>
+stream
+BT
+/F2 16 Tf
+1 0 0 1 54 740 Tm
+(Playlist Passeport - App Summary) Tj
+ET
+BT
+/F2 11 Tf
+1 0 0 1 54 722 Tm
+(What it is) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 708 Tm
+(A travel web app that lets users create trips, pin memories on a map,) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 696 Tm
+(and build playlists from the songs tied to those memories.) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 684 Tm
+(Frontend is React; backend is Node/Express with PostgreSQL and JWT auth.) Tj
+ET
+BT
+/F2 11 Tf
+1 0 0 1 54 668 Tm
+(Who it is for) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 654 Tm
+(Travelers who want a map-based journal of memories plus a music) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 642 Tm
+(soundtrack per trip.) Tj
+ET
+BT
+/F2 11 Tf
+1 0 0 1 54 626 Tm
+(What it does) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 612 Tm
+(- Register and log in with email/password \(JWT auth\).) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 600 Tm
+(- Create, view, and delete trips; see finished vs ongoing status.) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 588 Tm
+(- Add memories with a location, a selected song, photos, and coordinates.) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 576 Tm
+(- Search songs via Deezer and preview tracks.) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 564 Tm
+(- Drop and view map pins on Leaflet; search addresses via Nominatim.) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 552 Tm
+(- Upload photos to backend storage and view them in memories.) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 540 Tm
+(- Finish a trip to generate a Deezer-based playlist and view previews.) Tj
+ET
+BT
+/F2 11 Tf
+1 0 0 1 54 524 Tm
+(How it works \(repo-based\)) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 510 Tm
+(- Frontend: React + Vite, pages Home/TripDetails/Login/Register,) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 498 Tm
+(  AuthContext for token state, Axios API adds Bearer token.) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 486 Tm
+(- Map + geo: react-leaflet with OpenStreetMap tiles; Nominatim) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 474 Tm
+(  search from the frontend for coordinates.) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 462 Tm
+(- Backend: Express routes /auth, /trips, /memories, /songs,) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 450 Tm
+(  /playlists, /uploads; JWT middleware protects routes.) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 438 Tm
+(- Data: PostgreSQL via pg pool; models for users, trips, memories,) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 426 Tm
+(  photos, playlists, and songs.) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 414 Tm
+(- External: Deezer API for search + recommendations; Multer saves) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 402 Tm
+(  uploaded photos to /uploads and returns URLs.) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 390 Tm
+(- Data flow: UI -> Axios -> Express -> Postgres; Deezer -> backend) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 378 Tm
+(  -> playlist; uploads -> backend -> URL -> UI.) Tj
+ET
+BT
+/F2 11 Tf
+1 0 0 1 54 362 Tm
+(How to run \(minimal\)) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 348 Tm
+(- Backend: cd playlist-passport-backend; set .env with PGHOST,) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 336 Tm
+(  PGPORT, PGDATABASE, PGUSER, PGPASSWORD, PORT, JWT_SECRET;) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 324 Tm
+(  npm install; npm run dev \(or npm start\).) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 312 Tm
+(- Frontend: cd playlist-passport-frontend; npm install; npm run dev.) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 300 Tm
+(  API base URL is http://localhost:5005 in src/services/api.js.) Tj
+ET
+BT
+/F2 11 Tf
+1 0 0 1 54 284 Tm
+(Not found in repo) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 270 Tm
+(- Database schema/migrations/seed data.) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 258 Tm
+(- Deployment configs \(Vercel/Render\) and Cloudinary/Spotify) Tj
+ET
+BT
+/F1 9 Tf
+1 0 0 1 54 246 Tm
+(  integration beyond README mention.) Tj
+ET
+endstream
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000251 00000 n 
+0000000321 00000 n 
+0000000396 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+3923
+%%EOF

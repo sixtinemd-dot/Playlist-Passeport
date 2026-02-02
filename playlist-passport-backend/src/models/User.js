@@ -1,5 +1,6 @@
 const { pool } = require("../config/db");
 
+// Create a new user in the database with a hashed password
 const createUser = async (email, hashedPassword) => {
   const query = `
     INSERT INTO users (email, password)
@@ -11,6 +12,7 @@ const createUser = async (email, hashedPassword) => {
   return result.rows[0];
 };
 
+// Retrieve a user by email (used for login and registration checks)
 const getUserByEmail = async (email) => {
   const query = `SELECT * FROM users WHERE email = $1`;
   const result = await pool.query(query, [email]);
@@ -21,3 +23,4 @@ module.exports = {
   createUser,
   getUserByEmail,
 };
+

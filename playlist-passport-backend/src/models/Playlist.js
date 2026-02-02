@@ -11,10 +11,16 @@ const createPlaylist = async (tripId, name) => {
   return result.rows[0];
 };
 
-// Add song to playlist
+// Add a song to the playlist while skipping duplicates.
 const addSongToPlaylist = async (playlistId, song) => {
   const deezerId = song.deezerId ?? song.deezer_id;
   if (!deezerId) return;
+
+  const existing = await pool.query(
+    "SELECT 1 FROM playlist_songs WHERE playlist_id = $1 AND deezer_id = $2",
+    [playlistId, deezerId]
+  );
+  if (existing.rowCount > 0) return;
 
   const query = `
     INSERT INTO playlist_songs
@@ -37,7 +43,7 @@ const getPlaylistByTrip = async (tripId) => {
   // 1: Get playlists for this trip
   const playlistQuery = `SELECT * FROM playlists WHERE trip_id = $1`;
   const playlistRes = await pool.query(playlistQuery, [tripId]);
-  const playlists = playlistRes.rows; // rename to plural for clarity
+  const playlists = playlistRes.rows;
 
   if (!playlists.length) return [];
 

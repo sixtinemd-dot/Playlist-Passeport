@@ -3,7 +3,7 @@ const router = express.Router();
 const auth = require("../middleware/auth");
 const { searchSongs } = require("../models/Songs");
 
-// GET /songs/search?q=hello
+// GET /songs/search
 router.get("/search", auth, async (req, res) => {
   try {
     const { q } = req.query;

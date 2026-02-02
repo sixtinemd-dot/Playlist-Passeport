@@ -6,7 +6,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { useMapEvents } from "react-leaflet";
 import L from "leaflet";
 
-// Fix default marker icon in React Leaflet
+/* Leaflet: fix default marker icons when using React + Vite */
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://unpkg.com/leaflet/dist/images/marker-icon-2x.png",
@@ -14,13 +14,17 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet/dist/images/marker-shadow.png",
 });
 
+/* TripDetails: shows one trip with its memories (map + list) and generated playlist */
 export default function TripDetails() {
   const { tripId } = useParams();
 
+  /* Page data */
   const [trip, setTrip] = useState(null);
   const [memories, setMemories] = useState([]);
   const [playlist, setPlaylist] = useState([]);
 
+
+  /* Create-memory form state */
   const [newMemory, setNewMemory] = useState({
     locationName: "",
     song: null,
@@ -29,6 +33,7 @@ export default function TripDetails() {
     longitude: 2.3522,
   });
 
+    /* UI state */
   const [uploadStatus, setUploadStatus] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [songQuery, setSongQuery] = useState("");
@@ -37,9 +42,7 @@ export default function TripDetails() {
   const [locationStatus, setLocationStatus] = useState("");
   const [mapTarget, setMapTarget] = useState(null);
 
-  /* =========================
-     FETCH TRIP + MEMORIES
-  ========================== */
+  /* Load trip + memories (+ playlist if finished) */
   useEffect(() => {
     const fetchTripData = async () => {
       try {
@@ -61,9 +64,7 @@ export default function TripDetails() {
     fetchTripData();
   }, [tripId]);
 
-  /* =========================
-     MEMORY HELPERS
-  ========================== */
+  /* Upload photos to backend and store returned URLs in the new memory */
   const handlePhotoUpload = async (event) => {
     const files = Array.from(event.target.files || []);
     if (files.length === 0) return;
@@ -97,6 +98,7 @@ export default function TripDetails() {
     }
   };
 
+    /* Song search via backend (Deezer) */
   const searchSongs = async () => {
     if (!songQuery) return;
     try {
@@ -107,6 +109,7 @@ export default function TripDetails() {
     }
   };
 
+    /* Location search via Nominatim (OpenStreetMap) and center map on result */
    const handleLocationSearch = async (event) => {
     event.preventDefault();
     if (!locationQuery.trim()) return;
@@ -142,6 +145,7 @@ export default function TripDetails() {
     }
   };
 
+    /* Create a new memory for this trip */
   const handleAddMemory = async () => {
     if (!newMemory.locationName || !newMemory.song) {
       alert("Please fill location and select a song");
@@ -177,6 +181,8 @@ export default function TripDetails() {
     }
   };
 
+
+  /* Finish trip, generate playlist on backend, then fetch it */
     const handleFinishTrip = async () => {
     if (!window.confirm("Finish this trip and generate playlist?")) return;
 
@@ -202,8 +208,12 @@ export default function TripDetails() {
   if (!trip) return <p>Loading trip...</p>;
 
   const resolvePhotoUrl = (photo) =>
-  typeof photo === "string" ? photo : photo.photo_url;
+    typeof photo === "string" ? photo : photo.photo_url;
+  const formatMemoryDate = (value) =>
+    value ? new Date(value).toLocaleDateString() : "";
 
+
+    /* Map: click-to-pin handler */
   function MapClickHandler({ onPick }) {
     useMapEvents({
       click(e) {
@@ -213,6 +223,7 @@ export default function TripDetails() {
     return null;
   }
 
+  /* Map: recenter/zoom when a searched location is found */
   function MapViewController({ target }) {
     const map = useMap();
 
@@ -246,7 +257,6 @@ export default function TripDetails() {
           🎉 Finish Trip & Generate Playlist
         </button>
       )}
-
       <section className="map-panel">
         <div className="map-panel-header">
           <h2>🗺️ Memories Map</h2>
@@ -296,6 +306,14 @@ export default function TripDetails() {
             >
               <Popup>
                 <strong>{mem.location_name}</strong>
+                {mem.created_at && (
+                  <>
+                    <br />
+                    <span className="memory-date">
+                      🗓️ {formatMemoryDate(mem.created_at)}
+                    </span>
+                  </>
+                )}
                 <br />
                 🎵 {mem.song_title} — {mem.song_artist}
                 <div className="photos-container">
@@ -405,6 +423,11 @@ export default function TripDetails() {
             {memories.map((mem) => (
             <li key={mem.id} style={{ marginBottom: "1rem" }}>
                 <strong>{mem.location_name}</strong>
+                {mem.created_at && (
+                  <div className="memory-date">
+                    🗓️ {formatMemoryDate(mem.created_at)}
+                  </div>
+                )}
                 <div>
                 🎵 {mem.song_title} — {mem.song_artist}
                 </div>
